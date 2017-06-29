@@ -112,7 +112,7 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/grass-block.png',    // Row 2 of 2 of grass
             ],
             numRows = 6,
             numCols = 5,
@@ -131,11 +131,15 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
+                if (row == 0) {
+                    ctx.drawImage(Resources.get('images/top-spacer.png'), col * 101, 0);
+                }
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
 
         renderEntities();
+        renderScore();
     }
 
     /* This function is called by the render function and is called on each game
@@ -153,12 +157,23 @@ var Engine = (function(global) {
         player.render();
     }
 
+
+    function renderScore() {
+        var scoreText = 'Score: ' + gameParameters.score;
+        ctx.font = "30px Arial";
+        ctx.fillStyle = 'yellow';
+        ctx.strokeStyle = 'black';
+        ctx.fillText(scoreText,300,30);
+        ctx.strokeText(scoreText,300,30);
+    }
+
+
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        gameParameters.score = 0;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -166,13 +181,15 @@ var Engine = (function(global) {
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
+        'images/top-spacer.png',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
         'images/char-boy-dead.png',
-        'images/char-boy-winner.png'
+        'images/char-boy-winner.png',
+        'images/gem-orange.png'
     ]);
     Resources.onReady(init);
 

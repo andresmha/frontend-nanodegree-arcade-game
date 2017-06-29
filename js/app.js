@@ -1,24 +1,36 @@
-// Enemies our player must avoid
-var Enemy = function() {
+/**
+* Game Parameters Object
+*/
+var gameParameters = {
+    score: 0,
+    speedDifficulty: 50;
+};
 
+
+/**
+* Enemies our player mus avoid
+*/
+var Enemy = function() {
     //Set Random Initial Values for each Enemy
     this.setInitialValues();
-   
-    //Sprite Image
-    this.sprite = 'images/enemy-bug.png';
-
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    this.x += this.speed * dt;
 
+    //Detect Collision with player
+    //called with already rendered values to improve visualization
     if (this.detectCollision()) {
         player.setDead();
     }
 
+    //Detect if enemy is out of screen to restart running
+    //called with already rendered values to improve visualization
     this.outOfScreenDetection();
+
+    //Moves x variable according to speed, ready to render
+    this.x += this.speed * dt; 
 };
 
 // Draw the enemy on the screen, required method for game
@@ -26,25 +38,29 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-//Detect if Enemy is off screen to restart running
+//Detect if Enemy is offscreen (right) to restart running with another set of random values
 Enemy.prototype.outOfScreenDetection = function() {
     if (this.x > ctx.canvas.width) {
         this.setInitialValues();
     }
 };
 
+//Set initial random values for enemies to start running
 Enemy.prototype.setInitialValues = function() {
-    // Always offscreen left
+    //Sprite Image
+    this.sprite = 'images/enemy-bug.png';
+
+    // Always start offscreen left
     this.x = -101;
 
-    //Randomize de lines (1, 2 or 3)
+    //Randomize de line where enemy is going to run (0, 1, 2)
     this.runningLine = Math.floor(Math.random() * 3);
 
-    //Assign y value according to line assigned
+    //Assign "y" value according to line assigned
     this.y = 60 + (83 * this.runningLine);
 
-    //Random speed
-    this.speed = (Math.floor(Math.random() * 3) + 1)  * 100;
+    //Random speed according to difficulty level
+    this.speed = (Math.floor(Math.random() * 3) + 1)  * gameParameters.speedDifficulty;
 };
 
 //Colision Detection for each enemy with the player
@@ -114,6 +130,7 @@ Player.prototype.setInitialValues = function() {
     this.y = 380;
     this.runningLine = 4;
     this.isDead = false;
+    this.isWinner = false;
     this.canMove = true;
     this.sprite = 'images/char-boy.png';
 };
@@ -128,18 +145,33 @@ Player.prototype.setDead = function() {
 };
 
 Player.prototype.detectWin = function() {
-    if (this.runningLine < 0) {
+    if (this.runningLine < 0 && !this.isWinner) {
         this.sprite = 'images/char-boy-winner.png';
         this.canMove = false;
+        this.isWinner = true;
+        gameParameters.score += 10;
+        setTimeout(function() {
+            player.setInitialValues();
+        }, 1000);
+
     }
 };
 
+//Gem Class
+var Gem = function() {
+    this.x = 100;
+    this.y = 100;
+    this.sprite = 'images/gem-orange.png'
+}
 
+Gem.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
  
 
 // Instantiate objects.
 var allEnemies = [];
-var numberOfEnemies = 5;
+var numberOfEnemies = 3;
 
 //Create an instance for each enemy 
 for (i = 0; i < numberOfEnemies; i++){
@@ -148,6 +180,7 @@ for (i = 0; i < numberOfEnemies; i++){
 
 //Instantiate player
 var player = new Player();
+
 
 
 
