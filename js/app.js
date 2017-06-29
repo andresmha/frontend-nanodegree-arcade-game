@@ -13,7 +13,11 @@ var Enemy = function() {
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
-    this.render;
+
+    if (this.detectCollision()) {
+        player.setInitialValues();
+    }
+
     this.outOfScreenDetection();
 };
 
@@ -36,25 +40,38 @@ Enemy.prototype.setInitialValues = function() {
     //Randomize de lines (1, 2 or 3)
     this.runningLine = Math.floor(Math.random() * 3);
 
+    //TESTING
+    this.runningLine = 2;
+
     //Assign y value according to line assigned
     this.y = 60 + (83 * this.runningLine);
 
     //Random speed
     this.speed = (Math.floor(Math.random() * 3) + 1)  * 100;
+
+    //TESTING
+    this.speed = 100;
 };
 
 
+Enemy.prototype.detectCollision = function() {
+    if (player.runningLine == this.runningLine) {
+        if ((player.x + 84) >= this.x && (player.x + 17) <= (this.x + 101)) {
+            return true;
+        }
+    }
+    return false;
+};
+
 //Player Class
 var Player = function() {
-    this.x = 202;
-    this.y = 380;
+    
+    this.setInitialValues();
     this.sprite = 'images/char-boy.png';
 };
 
 
-Player.prototype.update = function(dt) {
-    
-};
+Player.prototype.update = function() {};
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -79,16 +96,27 @@ Player.prototype.handleInput = function(direction) {
         case 'up':
             if (this.y > 380 - (PLAYER_MOVEMENT_Y_PIXELS * 5)) {
                 this.y -= PLAYER_MOVEMENT_Y_PIXELS;
+                this.runningLine -= 1
             }
             break;
         case 'down':
             if (this.y < 380) {
                 this.y += PLAYER_MOVEMENT_Y_PIXELS;
+                this.runningLine += 1
             }
             break;
     }
 
 };
+
+Player.prototype.setInitialValues = function() {
+    this.x = 202;
+    this.y = 380;
+    this.runningLine = 4;
+};
+
+
+
     
 
 // Now instantiate your objects.
@@ -97,10 +125,14 @@ Player.prototype.handleInput = function(direction) {
 var allEnemies = [];
 var numberOfEnemies = 5;
 
+//TESTING
+var numberOfEnemies = 1;
+
+
+
 for (i = 0; i < numberOfEnemies; i++){
     allEnemies.push(new Enemy);
 }
-
 
 var player = new Player();
 
