@@ -15,7 +15,7 @@ Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
 
     if (this.detectCollision()) {
-        player.setInitialValues();
+        player.setDead();
     }
 
     this.outOfScreenDetection();
@@ -40,22 +40,16 @@ Enemy.prototype.setInitialValues = function() {
     //Randomize de lines (1, 2 or 3)
     this.runningLine = Math.floor(Math.random() * 3);
 
-    //TESTING
-    this.runningLine = 2;
-
     //Assign y value according to line assigned
     this.y = 60 + (83 * this.runningLine);
 
     //Random speed
     this.speed = (Math.floor(Math.random() * 3) + 1)  * 100;
-
-    //TESTING
-    this.speed = 100;
 };
 
-
+//Colision Detection for each enemy with the player
 Enemy.prototype.detectCollision = function() {
-    if (player.runningLine == this.runningLine) {
+    if (player.runningLine == this.runningLine && !player.isDead) {
         if ((player.x + 84) >= this.x && (player.x + 17) <= (this.x + 101)) {
             return true;
         }
@@ -63,21 +57,27 @@ Enemy.prototype.detectCollision = function() {
     return false;
 };
 
+
+
 //Player Class
 var Player = function() {
-    
     this.setInitialValues();
-    this.sprite = 'images/char-boy.png';
 };
 
 
-Player.prototype.update = function() {};
+Player.prototype.update = function() {
+    this.detectWin();
+};
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 Player.prototype.handleInput = function(direction) {
+    if (!player.canMove) {
+        return;
+    }
+
     //CONSTANTS
     var PLAYER_MOVEMENT_X_PIXELS = 101;
     var PLAYER_MOVEMENT_Y_PIXELS = 83;
@@ -113,28 +113,45 @@ Player.prototype.setInitialValues = function() {
     this.x = 202;
     this.y = 380;
     this.runningLine = 4;
+    this.isDead = false;
+    this.canMove = true;
+    this.sprite = 'images/char-boy.png';
+};
+
+Player.prototype.setDead = function() {
+    this.isDead = true;
+    this.canMove = false;
+    this.sprite = 'images/char-boy-dead.png';
+    setTimeout(function() {
+        player.setInitialValues();
+    }, 400);
+};
+
+Player.prototype.detectWin = function() {
+    if (this.runningLine < 0) {
+        this.sprite = 'images/char-boy-winner.png';
+        this.canMove = false;
+    }
 };
 
 
+ 
 
-    
-
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+// Instantiate objects.
 var allEnemies = [];
 var numberOfEnemies = 5;
 
-//TESTING
-var numberOfEnemies = 1;
-
-
-
+//Create an instance for each enemy 
 for (i = 0; i < numberOfEnemies; i++){
     allEnemies.push(new Enemy);
 }
 
+//Instantiate player
 var player = new Player();
+
+
+
+//-*-*-*-*-* Listeners *-*-*-*-*-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
