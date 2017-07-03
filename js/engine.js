@@ -173,7 +173,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        gameParameters.score = 0;
+        //gameParameters.score = 0;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -188,8 +188,7 @@ var Engine = (function(global) {
         'images/enemy-bug.png',
         'images/char-boy.png',
         'images/char-boy-dead.png',
-        'images/char-boy-winner.png',
-        'images/gem-orange.png'
+        'images/char-boy-winner.png'
     ]);
     Resources.onReady(init);
 
