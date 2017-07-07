@@ -165,8 +165,8 @@ Player.prototype.setDead = function() {
 
     //Sets a little time with this states before restarting values, this was made to give some feedback to the player
     setTimeout(function() {
-        player.setInitialValues();
-    }, 400);
+        this.setInitialValues();
+    }.bind(this), 400);
 };
 
 //Detects if player won
@@ -188,8 +188,8 @@ Player.prototype.detectWin = function() {
 
         //Sets a little time with this state before restarting value. Meant to give feedback to player.
         setTimeout(function() {
-            player.setInitialValues();
-        }, 800);
+            this.setInitialValues();
+        }.bind(this), 800);
 
     }
 };
